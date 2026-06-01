@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebLeadOS — Client Technical Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a14;
+      --bg-secondary: #111122;
+      --bg-tertiary: #18182f;
+      --accent-primary: #6366f1;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --border-primary: rgba(255, 255, 255, 0.05);
+      --border-accent: rgba(99, 102, 241, 0.25);
+      --radius-lg: 12px;
+      --radius-xl: 20px;
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Presentation Layout */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.98) translateY(10px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8% 10%;
+      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 80%);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Typography & Styling */
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 40%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    .content-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(12px);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    li {
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: start;
+      gap: 10px;
+    }
+
+    li strong {
+      color: var(--text-primary);
+    }
+
+    li::before {
+      content: "⚡";
+      color: var(--accent-primary);
+      font-weight: bold;
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent-green);
+      font-family: 'Fira Code', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Navigation Bar */
+    .deck-nav {
+      height: 70px;
+      border-top: 1px solid var(--border-primary);
+      background-color: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4rem;
+      z-index: 100;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent-primary);
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      margin: 0 3rem;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-primary);
+      width: 0;
+      transition: width 0.3s;
+    }
+
+    /* Diagrams */
+    .diagram-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #08080f;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      height: 100%;
+    }
+
+    /* Tag styles */
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .tag-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+    .tag-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .tag-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .tag-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide active">
+      <span class="tag tag-purple">System Architecture Overview</span>
+      <h1>WebLeadOS</h1>
+      <p class="subtitle" style="font-size: 1.6rem; margin-bottom: 2rem;">
+        An End-to-End AI Automation Pipeline for Local Business Customer Acquisition
+      </p>
+      <div class="content-box grid-2" style="max-width: 900px; margin-top: 1rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.8rem; color: #fff;">The Core Concept</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1rem;">
+            WebLeadOS automatically discovers local businesses with missing or poorly-performing websites, audits their digital gaps, generates high-quality replacement previews, and sends personalized cold outreach.
+          </p>
+        </div>
+        <div style="border-left: 1px solid var(--border-primary); padding-left: 2rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.8rem; color: #fff;">Why It Works</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1rem;">
+            Prospects view a <strong>completed, branded, live preview website</strong> before the sales pitch even starts, eliminating the traditional barrier to closing.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Pipeline Diagram -->
+    <div class="slide">
+      <span class="tag tag-blue">Execution Map</span>
+      <h2>Interactive System Pipeline</h2>
+      <p class="subtitle" style="margin-bottom: 1.5rem;">Visual breakdown of the automated sequential pipeline</p>
+      <div class="grid-2" style="flex: 1; min-height: 380px;">
+        <div class="diagram-container">
+          <!-- SVG Diagram -->
+          <svg viewBox="0 0 700 350" width="100%" height="100%" style="max-height: 320px;">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
+              </marker>
+            </defs>
+            <!-- Nodes -->
+            <rect x="20" y="40" width="160" height="50" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5" />
+            <text x="100" y="70" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">1. Discover Leads</text>
+
+            <rect x="260" y="40" width="160" height="50" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="340" y="70" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">2. Audit & Scoring</text>
+
+            <rect x="500" y="40" width="160" height="50" rx="8" fill="#180f2a" stroke="#ec4899" stroke-width="1.5" />
+            <text x="580" y="70" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">3. AI Brand Analysis</text>
+
+            <rect x="500" y="240" width="160" height="50" rx="8" fill="#082f49" stroke="#06b6d4" stroke-width="1.5" />
+            <text x="580" y="270" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">4. Page Generator</text>
+
+            <rect x="260" y="240" width="160" height="50" rx="8" fill="#062f2f" stroke="#10b981" stroke-width="1.5" />
+            <text x="340" y="270" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">5. CDN Deployment</text>
+
+            <rect x="20" y="240" width="160" height="50" rx="8" fill="#2d1f05" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="100" y="270" font-family="Inter" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">6. Outreach & CRM</text>
+
+            <!-- Links -->
+            <path d="M 180 65 L 260 65" fill="none" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)" />
+            <path d="M 420 65 L 500 65" fill="none" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow)" />
+            <path d="M 580 90 L 580 240" fill="none" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow)" />
+            <path d="M 500 265 L 420 265" fill="none" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#arrow)" />
+            <path d="M 260 265 L 180 265" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow)" />
+          </svg>
+        </div>
+        <div class="content-box" style="display: flex; flex-direction: column; justify-content: center;">
+          <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: #fff;">Flow Summary</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1rem; margin-bottom: 1rem;">
+            Data originates from Maps and Yelp, is normalized into structured files, undergoes brand voice alignment via LLMs, gets built into static web layouts, publishes to custom subdomains, and feeds CRM follow-up schedules.
+          </p>
+          <div style={{ color: 'var(--accent-primary)', fontWeight: 600, fontSize: '0.95rem' }}>
+            🔄 Active feedback loop updates statuses dynamically.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Stage 1 - Discovery -->
+    <div class="slide">
+      <span class="tag tag-purple">Stage 1</span>
+      <h2>Lead Discovery Engine</h2>
+      <p class="subtitle">Finding high-value opportunities at scale</p>
+      <div class="grid-2">
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Discovery Vectors</h3>
+          <ul>
+            <li><strong>Google Maps & Yelp Scrapers:</strong> Filters out businesses without sites or suffering severe performance gaps.</li>
+            <li><strong>Technical audits:</strong> Executes Google Lighthouse APIs. Flags sites with scores &lt; 50, missing SSL security, or desktop-only interfaces.</li>
+            <li><strong>Local business registries:</strong> Tracks new filings to pitch new owners early.</li>
+          </ul>
+        </div>
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Scoring Engine (LQS Score)</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+            Each lead receives a Lead Quality Score from <strong>0 to 100</strong> prioritizing conversion potentials:
+          </p>
+          <div style="font-family: 'Fira Code', monospace; background: #08080f; padding: 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-primary);">
+            LQS = (25% Website Gaps) + (20% Revenue Est) + (15% Social Digital Presence) + (15% Phone/Email Data)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Stage 2 & 3 - Research & Brand Understanding -->
+    <div class="slide">
+      <span class="tag tag-amber">Stage 2 & 3</span>
+      <h2>Research & Brand Analysis</h2>
+      <p class="subtitle">Creating a complete digital identity profile automatically</p>
+      <div class="grid-2">
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Data Gathering Matrix</h3>
+          <ul>
+            <li><strong>Visual Identity:</strong> Gathers existing colors, logos, and picture styles from social networks (Facebook, Instagram).</li>
+            <li><strong>Scope of services:</strong> Crawls listings or reviews to extract explicit product offerings and service structures.</li>
+            <li><strong>Review sentiments:</strong> Captures top Google Maps review comments to extract testimonials and user sentiments.</li>
+          </ul>
+        </div>
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">AI Brand Formulation</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+            LLM scripts (Claude 3.5 Sonnet / GPT-4o) translate raw business profiles into creative briefs:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="background: rgba(16,185,129,0.08); padding: 8px 12px; border-radius: 4px; font-size: 0.9rem; color: #34d399; font-weight: 500;">🎨 Layout tokens, color matching & custom fonts</div>
+            <div style="background: rgba(59,130,246,0.08); padding: 8px 12px; border-radius: 4px; font-size: 0.9rem; color: #60a5fa; font-weight: 500;">✍️ Custom copy aligned to business niche services</div>
+            <div style="background: rgba(245,158,11,0.08); padding: 8px 12px; border-radius: 4px; font-size: 0.9rem; color: #fbbf24; font-weight: 500;">🎯 Call-to-Action strategy (niche conversion goals)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Stage 4 - Website Generation -->
+    <div class="slide">
+      <span class="tag tag-green">Stage 4</span>
+      <h2>AI Website Generator</h2>
+      <p class="subtitle">Production-grade builds created in seconds</p>
+      <div class="content-box grid-2">
+        <div>
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Generation Specifications</h3>
+          <ul>
+            <li><strong>Component Framework:</strong> Astro 5 for static HTML structures, guaranteeing Lighthouse scores &gt; 90 and fast loads.</li>
+            <li><strong>Page structures:</strong> Builds Home, specific Services list, About Us, Contact forms, and interactive Testimonial modules.</li>
+            <li><strong>SEO compliance:</strong> Injects metadata matching local queries: <code>{Service} in {City} | {Business}</code>.</li>
+          </ul>
+        </div>
+        <div style="background: #08080f; border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border-primary); display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            <span style="color: #ec4899;">const</span> website = {<br>
+            &nbsp;&nbsp;framework: <span style="color: #10b981;">'Astro'</span>,<br>
+            &nbsp;&nbsp;performance: <span style="color: #f59e0b;">98</span>,<br>
+            &nbsp;&nbsp;seo: { titles: true, schemaMarkup: true },<br>
+            &nbsp;&nbsp;responsive: <span style="color: #3b82f6;">true</span>,<br>
+            &nbsp;&nbsp;pages: [<span style="color: #10b981;">'home'</span>, <span style="color: #10b981;">'about'</span>, <span style="color: #10b981;">'services'</span>, <span style="color: #10b981;">'contact'</span>]<br>
+            };
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Stage 5 & 6 - Deploy & Outreach -->
+    <div class="slide">
+      <span class="tag tag-blue">Stage 5 & 6</span>
+      <h2>Edge Deployments & Cold Outreach</h2>
+      <p class="subtitle">Publishing previews and initiating high-converting sales cycles</p>
+      <div class="grid-2">
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Deployment Architecture</h3>
+          <ul>
+            <li><strong>Cloudflare Pages:</strong> Distributes generated sites immediately to edge CDNs.</li>
+            <li><strong>Headless screenshotting:</strong> Automates page previews to capture visual assets for email pitches.</li>
+            <li><strong>Dynamic Subdomains:</strong> Deploys to URLs like <code>businessname.preview.webleados.com</code>.</li>
+          </ul>
+        </div>
+        <div class="content-box">
+          <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.25rem;">Outreach Engine</h3>
+          <ul>
+            <li><strong>Resend + SMTP:</strong> Automates personalized cold pitches showing screenshots of their custom site.</li>
+            <li><strong>Pixel tracking:</strong> Gathers read stats, link clicks, and logs replies.</li>
+            <li><strong>Auto sequences:</strong> Triggers follow-ups in 2 days if no response is detected.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Stage 7 - Technical Architecture -->
+    <div class="slide">
+      <span class="tag tag-purple">Tech Stack</span>
+      <h2>Technical Infrastructure Specifications</h2>
+      <p class="subtitle">CTO recommendations for modular stability</p>
+      <div class="grid-3">
+        <div class="metric-card">
+          <div class="metric-value">Astro 5</div>
+          <div class="metric-label">Website Output</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">Node.js</div>
+          <div class="metric-label">Backend API</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">Postgres</div>
+          <div class="metric-label">Core Database</div>
+        </div>
+      </div>
+      <div class="content-box grid-2" style="margin-top: 1.5rem; padding: 1.5rem;">
+        <div>
+          <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem;">Data Store</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+            PostgreSQL storing Lead profiles, Creative Brief objects, and outreach transaction records. JSONB support tracks scraping arrays.
+          </p>
+        </div>
+        <div style="border-left: 1px solid var(--border-primary); padding-left: 2rem;">
+          <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem;">Job Queues</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+            BullMQ (backed by Redis) manages rate-limited API calls, scraper pools, and delayed email sequences.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Stage 8 - Financial Projections -->
+    <div class="slide">
+      <span class="tag tag-green">Monetization</span>
+      <h2>Economics & ROI Projections</h2>
+      <p class="subtitle">Unit economics and margin structures</p>
+      <div class="grid-3" style="margin-bottom: 2rem;">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--accent-primary);">$997</div>
+          <div class="metric-label">Avg Setup Fee</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">$149/mo</div>
+          <div class="metric-label">Recurring Subscription</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--accent-amber);">$0.50</div>
+          <div class="metric-label">API Cost/Lead</div>
+        </div>
+      </div>
+      <div class="content-box">
+        <h3 style="color: #fff; font-size: 1.25rem; margin-bottom: 0.8rem;">Unit Economics</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1rem;">
+          Discovery, research, AI tokens, CDN deploy, and Resend outreach compile to roughly <strong>$0.50 in total operational cost per lead</strong>. Pushing 100 pitches/day averages $50/day. With a closing rate of just 1%, this yields 1 client/day, yielding a <strong>20× ROI on API spend</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Slide 9: Roadmap -->
+    <div class="slide">
+      <span class="tag tag-purple">Roadmap</span>
+      <h2>Phased Execution Plan</h2>
+      <p class="subtitle">Draft timeline to production launch</p>
+      <div class="grid-3">
+        <div class="content-box" style="padding: 1.5rem;">
+          <h3 style="font-size: 1.2rem; color: var(--accent-primary); margin-bottom: 0.8rem;">Days 1-15: MVP</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+            Visual CRM Dashboard, mock data engines, and manual lead creator. Establish the layout foundation.
+          </p>
+        </div>
+        <div class="content-box" style="padding: 1.5rem;">
+          <h3 style="font-size: 1.2rem; color: var(--accent-green); margin-bottom: 0.8rem;">Days 16-30: Core</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+            Hook up scrapers, LLM generators, page templates, and SMTP email dispatcher. Connect data tables.
+          </p>
+        </div>
+        <div class="content-box" style="padding: 1.5rem;">
+          <h3 style="font-size: 1.2rem; color: var(--accent-amber); margin-bottom: 0.8rem;">Days 30+: Scale</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+            Bulk triggers, geographic crawler profiles, automated DNS registrars, and White-label agency portals.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="deck-nav">
+    <button class="nav-btn" id="prev-btn">
+      ← Prev
+    </button>
+    
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <div id="slide-number" style="color: var(--text-secondary); min-width: 60px; text-align: center;">1 / 9</div>
+
+    <button class="nav-btn" id="next-btn">
+      Next →
+    </button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const slideNumber = document.getElementById('slide-number');
+
+    let currentSlide = 0;
+
+    function updateSlide() {
+      slides.forEach((slide, i) => {
+        if (i === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update progress bar
+      const progress = ((currentSlide + 1) / slides.length) * 100;
+      progressFill.style.width = `${progress}%`;
+
+      // Update slide number
+      slideNumber.textContent = `${currentSlide + 1} / ${slides.length}`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          updateSlide();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlide();
+        }
+      }
+    });
+
+    // Init progress
+    updateSlide();
+  </script>
+</body>
+</html>

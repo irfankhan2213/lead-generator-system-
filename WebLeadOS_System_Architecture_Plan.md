@@ -23,15 +23,28 @@ WebLeadOS is an end-to-end, AI-orchestrated customer acquisition and website gen
 
 ## 2. System Architecture & Component Mapping
 
+```mermaid
+graph TD
+    LS[Lead Sources] --> DE[Discovery Engine]
+    DE --> RA[Research & Audit]
+    RA --> LBP[LLM Brand Parser]
+    LBP --> BBL[Brand Brief Layer]
+    BBL --> AC[Astro Compiler]
+    AC --> CCDN[Cloudflare CDN]
+    CCDN --> RE[Resend Emailer]
+    RE --> SCP[Stripe Conversion Portal]
+
+    style LS fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff
+    style DE fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff
+    style RA fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style LBP fill:#180f2a,stroke:#ec4899,stroke-width:2px,color:#fff
+    style BBL fill:#180f2a,stroke:#ec4899,stroke-width:2px,color:#fff
+    style AC fill:#082f49,stroke:#06b6d4,stroke-width:2px,color:#fff
+    style CCDN fill:#062f2f,stroke:#10b981,stroke-width:2px,color:#fff
+    style RE fill:#2d1f05,stroke:#f59e0b,stroke-width:2px,color:#fff
+    style SCP fill:#062f14,stroke:#10b981,stroke-width:2px,color:#fff
 ```
-[Lead Sources] ──> [Discovery Engine] ──> [Research & Audit]
-                                                 │
-                                                 ▼
-[Astro Compiler] <── [Brand Brief Layer] <── [LLM Brand Parser]
-       │
-       ▼
-[Cloudflare CDN] ──> [Resend Emailer] ──> [Stripe Conversion Portal]
-```
+
 
 ### Stage 1: Lead Discovery Engine
 The system discovers prospects by queries targeting local directories and search engines.
@@ -163,12 +176,18 @@ CREATE TABLE clients (
 
 To run asynchronously without exceeding API rate limits or overloading server memory, tasks are processed through Redis-backed queues:
 
+```mermaid
+graph LR
+    DQ[Discovery Queue] --> RQ[Research Queue] --> AIQ[AI Synthesis Queue] --> GQ[Generation Queue] --> Deq[Deploy Queue] --> OQ[Outreach Queue]
+
+    style DQ fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff
+    style RQ fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style AIQ fill:#180f2a,stroke:#ec4899,stroke-width:2px,color:#fff
+    style GQ fill:#082f49,stroke:#06b6d4,stroke-width:2px,color:#fff
+    style Deq fill:#062f2f,stroke:#10b981,stroke-width:2px,color:#fff
+    style OQ fill:#2d1f05,stroke:#f59e0b,stroke-width:2px,color:#fff
 ```
-[Discovery Queue] ──> [Research Queue] ──> [AI Synthesis Queue]
-                                                 │
-                                                 ▼
-[Outreach Queue]  <── [Deploy Queue]   <── [Generation Queue]
-```
+
 
 1. **`discovery-queue`:** Pulls listing data from Google Places. Rate-limited to **10 concurrent requests/minute** to protect API quotas.
 2. **`research-queue`:** Audits website speeds. Processes **5 concurrent jobs** using headless browser pools.
@@ -212,22 +231,38 @@ WebLeadOS monetizes through setup fees and recurring subscriptions:
 
 ## 6. Project Rollout Roadmap
 
-```
-Phase 1: Foundation (Days 1-15)
-├─ Setup Dashboard Shell
-├─ CRM tables & Lead manager
-└─ Static mockup layout
+```mermaid
+graph TD
+    subgraph Phase 1: Foundation (Days 1-15)
+        P1_1[Setup Dashboard Shell]
+        P1_2[CRM Tables & Lead Manager]
+        P1_3[Static Mockup Layout]
+    end
+    subgraph Phase 2: Automation (Days 16-30)
+        P2_1[Google Maps & Yelp Scrapers]
+        P2_2[Claude API Copywriting]
+        P2_3[Cloudflare Auto Deploy]
+    end
+    subgraph Phase 3: Production (Days 31-45)
+        P3_1[Resend Email Sequences]
+        P3_2[BullMQ Background Tasks]
+        P3_3[Stripe Subscription Integration]
+    end
 
-Phase 2: Automation (Days 16-30)
-├─ Google Maps & Yelp scrapers
-├─ Claude API copy writers
-└─ CF pages auto deployments
+    P1_3 --> P2_1
+    P2_3 --> P3_1
 
-Phase 3: Production (Days 31-45)
-├─ Resend email sequences
-├─ BullMQ background tasks
-└─ Stripe subscriptions integration
+    style P1_1 fill:#1e1b4b,stroke:#6366f1,stroke-width:1.5px,color:#fff
+    style P1_2 fill:#1e1b4b,stroke:#6366f1,stroke-width:1.5px,color:#fff
+    style P1_3 fill:#1e1b4b,stroke:#6366f1,stroke-width:1.5px,color:#fff
+    style P2_1 fill:#0f172a,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+    style P2_2 fill:#0f172a,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+    style P2_3 fill:#0f172a,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+    style P3_1 fill:#062f2f,stroke:#10b981,stroke-width:1.5px,color:#fff
+    style P3_2 fill:#062f2f,stroke:#10b981,stroke-width:1.5px,color:#fff
+    style P3_3 fill:#062f2f,stroke:#10b981,stroke-width:1.5px,color:#fff
 ```
+
 
 * **Phase 1: MVP Dashboard (Days 1-15):** Dashboard interface, CRM tables, manual lead creator, website gallery, and layout structures. (Completed in this session).
 * **Phase 2: Automated Core Engines (Days 16-30):** Integrations for Google Maps, Claude API copywriting, Astro code compilation, and Cloudflare CLI subdomain deployment.

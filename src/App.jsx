@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import OverviewPage from './pages/OverviewPage';
+import WorkflowPage from './pages/WorkflowPage';
 import LeadsPage from './pages/LeadsPage';
 import WebsitesPage from './pages/WebsitesPage';
 import OutreachPage from './pages/OutreachPage';
@@ -19,6 +20,7 @@ import { X } from 'lucide-react';
 
 const viewConfig = {
   overview:    { title: 'Overview',           subtitle: 'System command center' },
+  workflow:    { title: 'Live Workflow',       subtitle: 'Visual system pipeline' },
   pipeline:    { title: 'Pipeline',           subtitle: 'Lead progression tracker' },
   leads:       { title: 'Lead Management',    subtitle: 'Discover & qualify prospects' },
   websites:    { title: 'Website Gallery',    subtitle: 'AI-generated sites' },
@@ -58,6 +60,7 @@ export default function App() {
   const renderPage = () => {
     switch (activeView) {
       case 'overview':    return <OverviewPage onSelectLead={setSelectedLeadId} />;
+      case 'workflow':    return <WorkflowPage onSelectLead={setSelectedLeadId} />;
       case 'pipeline':    return <PipelinePage onSelectLead={setSelectedLeadId} />;
       case 'leads':       return <LeadsPage onSelectLead={setSelectedLeadId} />;
       case 'websites':    return <WebsitesPage onSelectLead={setSelectedLeadId} />;

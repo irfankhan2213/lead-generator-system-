@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Users, Globe, Send, DollarSign,
   Settings, ChevronRight, Search, Bell, Zap,
-  TrendingUp, BarChart3, Target, BookOpen, Radio
+  TrendingUp, BarChart3, Target, BookOpen, Radio, Network
 } from 'lucide-react';
 
 export default function Sidebar({ activeView, onNavigate, liveCounts }) {
@@ -11,6 +11,7 @@ export default function Sidebar({ activeView, onNavigate, liveCounts }) {
   const navItems = [
     { section: 'Command Center' },
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, badge: null, live: true },
+    { id: 'workflow', label: 'Live Workflow', icon: Network, badge: 'LIVE', live: true },
     { id: 'pipeline', label: 'Pipeline', icon: Target, badge: null },
     { section: 'Operations' },
     { id: 'leads', label: 'Lead Management', icon: Users, badge: counts.leads || '142' },
